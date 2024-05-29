@@ -22,9 +22,10 @@ public protocol CoreRequestBuilder: NetworkBuilder {
     func cancel()
 }
 
+//MARK: - DataRequestWrapper
 @available(macOS 10.15, *)
 extension CoreRequestBuilder {
-    var dataRequestWrapper: DataRequestWrapper {
+    private var dataRequestWrapper: DataRequestWrapper {
         /// wrapper의 레퍼런스가 등록되어있는지 확인
         if let wrapper = objc_getAssociatedObject(self, &AssociatedKeys.dataRequestWrapperKey) as? DataRequestWrapper {
             return wrapper
@@ -55,9 +56,10 @@ extension CoreRequestBuilder {
     }
 }
 
+//MARK: - Request
 @available(macOS 10.15, *)
 extension CoreRequestBuilder {
-    func request(debug: Bool) -> AnyPublisher<ResponseType, Error> {
+    public func request(debug: Bool) -> AnyPublisher<ResponseType, Error> {
         return Deferred {
             self.defaultRequest(debug: debug)
         }
@@ -65,7 +67,7 @@ extension CoreRequestBuilder {
         .eraseToAnyPublisher()
     }
     
-    func defaultRequest(debug: Bool) -> AnyPublisher<ResponseType, Error> {
+    public func defaultRequest(debug: Bool) -> AnyPublisher<ResponseType, Error> {
         Future<ResponseType, Error> { promise in
             if case .failure(let error) = self.dataRequestWrapper {
                 promise(.failure(error))
@@ -102,6 +104,28 @@ extension CoreRequestBuilder {
                 }
             }
         }
+        .eraseToAnyPublisher()
+    }
+}
+
+@available(macOS 10.15, *)
+extension CoreRequestBuilder {
+    public func mockRequest(from string: String) -> AnyPublisher<ResponseType, Error> {
+        guard let data = string.data(using: .utf8, allowLossyConversion: false) else {
+            return Fail(error: CommonNetworkError.unknown).eraseToAnyPublisher()
+        }
+
+        return Deferred {
+            Future<ResponseType, Error> { promise in
+                do {
+                    let decoded = try decode(from: data)
+                    promise(.success(decoded))
+                } catch {
+                    promise(.failure(error))
+                }
+            }
+        }
+        .receive(on: DispatchQueue.main)
         .eraseToAnyPublisher()
     }
 }
