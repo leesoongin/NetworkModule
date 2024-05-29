@@ -18,13 +18,11 @@ public protocol NetworkBuilder {
     var parameterEncoding: ParameterEncoding { get }
     var networkSession: Session { get }
     var additionalHeader: AdditionalHeader? { get }
-    
-    func decode(from data: Data) throws -> ResponseType
 }
 
 //MARK: - Default Value Setting
 public extension NetworkBuilder {
-    var header: HTTPHeaders {
+    var header: HTTPHeaders? {
         var defaultHeader: HTTPHeaders = .default
 
         header?.makeIterator().forEach {
@@ -45,6 +43,10 @@ public extension NetworkBuilder {
             JSONEncoding.default
         }
     }
+    var networkSession: Session {
+        Session.default
+    }
+    var additionalHeader: AdditionalHeader? { nil }
 }
 
 extension NetworkBuilder {
