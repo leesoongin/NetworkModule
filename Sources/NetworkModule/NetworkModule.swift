@@ -23,7 +23,7 @@ public protocol NetworkBuilder {
 }
 
 //MARK: - Default Value Setting
-extension NetworkBuilder {
+public extension NetworkBuilder {
     var header: HTTPHeaders {
         var defaultHeader: HTTPHeaders = .default
 
