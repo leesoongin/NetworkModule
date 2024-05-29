@@ -13,7 +13,7 @@ private enum AssociatedKeys {
     static var dataRequestWrapperKey: UInt8 = 0
 }
 
-@available(macOS 10.15, *)
+@available(macOS 10.15, iOS 15, *)
 public protocol CoreRequestBuilder: NetworkBuilder {
     typealias DataRequestWrapper = Result<DataRequest, CommonNetworkError>
     
@@ -23,7 +23,7 @@ public protocol CoreRequestBuilder: NetworkBuilder {
 }
 
 //MARK: - DataRequestWrapper
-@available(macOS 10.15, *)
+@available(macOS 10.15, iOS 15, *)
 extension CoreRequestBuilder {
     private var dataRequestWrapper: DataRequestWrapper {
         /// wrapper의 레퍼런스가 등록되어있는지 확인
@@ -57,7 +57,7 @@ extension CoreRequestBuilder {
 }
 
 //MARK: - Request
-@available(macOS 10.15, *)
+@available(macOS 10.15, iOS 15, *)
 extension CoreRequestBuilder {
     public func cancel() {
         guard case .success(let dataRequest) = dataRequestWrapper else { return }
@@ -113,7 +113,7 @@ extension CoreRequestBuilder {
     }
 }
 
-@available(macOS 10.15, *)
+@available(macOS 10.15, iOS 15, *)
 extension CoreRequestBuilder {
     public func mockRequest(from string: String) -> AnyPublisher<ResponseType, Error> {
         guard let data = string.data(using: .utf8, allowLossyConversion: false) else {
