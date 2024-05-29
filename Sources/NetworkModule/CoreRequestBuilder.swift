@@ -59,6 +59,11 @@ extension CoreRequestBuilder {
 //MARK: - Request
 @available(macOS 10.15, *)
 extension CoreRequestBuilder {
+    public func cancel() {
+        guard case .success(let dataRequest) = dataRequestWrapper else { return }
+        dataRequest.cancel()
+    }
+    
     public func request(debug: Bool) -> AnyPublisher<ResponseType, Error> {
         return Deferred {
             self.defaultRequest(debug: debug)
